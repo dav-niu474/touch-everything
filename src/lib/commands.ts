@@ -411,15 +411,49 @@ export const commands: SlashCommand[] = [
 /** @deprecated Use `commands` instead. Kept for backward compatibility. */
 export const COMMANDS = commands;
 
+// ─── Model Categories ─────────────────────────────────────────────────────
+
+export type ModelCategory = 'default' | 'chinese' | 'reasoning' | 'coding' | 'nvidia';
+
+export interface ModelInfo {
+  id: string;
+  name: string;
+  description: string;
+  default: boolean;
+  category: ModelCategory;
+}
+
 /** @deprecated Use `categoryLabels` instead. Kept for backward compatibility. */
-export const AVAILABLE_MODELS = [
-  { id: 'deepseek-ai/deepseek-v3.1', name: 'DeepSeek V3.1', description: 'Best for coding tasks', default: true },
-  { id: 'meta/llama-3.1-70b-instruct', name: 'Llama 3.1 70B', description: 'General purpose model', default: false },
-  { id: 'mistralai/mistral-large-2-instruct', name: 'Mistral Large 2', description: 'Fast responses', default: false },
-  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'Nemotron 70B', description: 'NVIDIA optimized', default: false },
+export const AVAILABLE_MODELS: ModelInfo[] = [
+  // ── Default (recommended) ────────────────────────────────────────────
+  { id: 'deepseek-ai/deepseek-v3.1', name: 'DeepSeek V3.1', description: 'Best for coding tasks', default: true, category: 'default' },
+
+  // ── Chinese LLMs ────────────────────────────────────────────────────
+  { id: 'moonshotai/kimi-k2-instruct', name: 'Kimi K2', description: 'Moonshot AI, strong Chinese + English', default: false, category: 'chinese' },
+  { id: 'z-ai/glm4.7', name: 'GLM 4.7', description: 'Zhipu AI, bilingual reasoning', default: false, category: 'chinese' },
+  { id: 'qwen/qwen3.5-122b-a10b', name: 'Qwen 3.5 122B', description: 'Alibaba, MoE architecture', default: false, category: 'chinese' },
+
+  // ── Reasoning ───────────────────────────────────────────────────────
+  { id: 'deepseek-ai/deepseek-r1-distill-qwen-32b', name: 'DeepSeek R1 32B', description: 'Distilled reasoning model', default: false, category: 'reasoning' },
+  { id: 'moonshotai/kimi-k2-thinking', name: 'Kimi K2 Thinking', description: 'K2 with chain-of-thought', default: false, category: 'reasoning' },
+
+  // ── Coding ──────────────────────────────────────────────────────────
+  { id: 'qwen/qwen3-coder-480b-a35b-instruct', name: 'Qwen 3 Coder 480B', description: 'Massive coding specialist', default: false, category: 'coding' },
+  { id: 'mistralai/devstral-2-123b-instruct-2512', name: 'Devstral 2 123B', description: 'Mistral coding specialist', default: false, category: 'coding' },
+
+  // ── Western LLMs ────────────────────────────────────────────────────
+  { id: 'meta/llama-3.3-70b-instruct', name: 'Llama 3.3 70B', description: 'Meta, general purpose', default: false, category: 'nvidia' },
+  { id: 'mistralai/mistral-large-2-instruct', name: 'Mistral Large 2', description: 'Mistral, fast responses', default: false, category: 'nvidia' },
+  { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'Nemotron 70B', description: 'NVIDIA optimized', default: false, category: 'nvidia' },
 ] as const;
 
-export type ModelInfo = (typeof AVAILABLE_MODELS)[number];
+export const MODEL_CATEGORY_LABELS: Record<ModelCategory, string> = {
+  default: '⭐ Recommended',
+  chinese: '🇨🇳 Chinese LLMs',
+  reasoning: '🧠 Reasoning',
+  coding: '💻 Coding',
+  nvidia: '🌐 Western LLMs',
+};
 
 // ─── Category Icons ──────────────────────────────────────────────────────────
 
@@ -569,19 +603,11 @@ export function generateHelpText(): string {
 
 // ─── Available Models ────────────────────────────────────────────────────────
 
-export const availableModels = [
-  'deepseek-ai/deepseek-v3.1',
-  'meta/llama-3.1-70b-instruct',
-  'mistralai/mistral-large-2-instruct',
-  'nvidia/llama-3.1-nemotron-70b-instruct',
-] as const;
+export const availableModels = AVAILABLE_MODELS.map((m) => m.id);
 
-export const modelDisplayNames: Record<string, string> = {
-  'deepseek-ai/deepseek-v3.1': 'DeepSeek V3.1',
-  'meta/llama-3.1-70b-instruct': 'Llama 3.1 70B',
-  'mistralai/mistral-large-2-instruct': 'Mistral Large 2',
-  'nvidia/llama-3.1-nemotron-70b-instruct': 'Nemotron 70B',
-};
+export const modelDisplayNames: Record<string, string> = Object.fromEntries(
+  AVAILABLE_MODELS.map((m) => [m.id, m.name])
+);
 
 export const availableThemes = ['dark', 'light', 'terminal-green'] as const;
 export type ThemeOption = (typeof availableThemes)[number];

@@ -11,7 +11,10 @@ import {
   categoryLabels,
   availableModels,
   modelDisplayNames,
+  AVAILABLE_MODELS,
+  MODEL_CATEGORY_LABELS,
   type SlashCommand,
+  type ModelCategory,
 } from '@/lib/commands';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -525,14 +528,32 @@ function handleModel(args: string): CommandResult {
     }
     return {
       type: 'message',
-      content:
-        `Model not found. Available models:\n${availableModels.map((m) => `- **${modelDisplayNames[m]}** (\`${m}\`)`).join('\n')}`,
+      content: `Model "${args.trim()}" not found. Use \`/model\` to see available models.`,
     };
   }
 
+  // Show models grouped by category
+  const categoryOrder: ModelCategory[] = ['default', 'chinese', 'reasoning', 'coding', 'nvidia'];
+  const sections = categoryOrder
+    .map((cat) => {
+      const models = AVAILABLE_MODELS.filter((m) => m.category === cat);
+      if (models.length === 0) return '';
+      const label = MODEL_CATEGORY_LABELS[cat];
+      const list = models
+        .map((m) => {
+          const marker = m.default ? ' ⭐' : '';
+          return `- **${m.name}**${marker} — ${m.description}\`  ${m.id}\``;
+        })
+        .join('\n');
+      return `#### ${label}\n${list}`;
+    })
+    .filter(Boolean)
+    .join('\n\n');
+
   return {
-    type: 'action',
-    action: { type: 'cycle-model' },
+    type: 'message',
+    content:
+      `### 🤖 Available Models\n\n${sections}\n\n---\n*Tip: Use \`/model <name>\` to switch, or click the model selector.*`,
   };
 }
 

@@ -445,7 +445,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
   { id: 'meta/llama-3.3-70b-instruct', name: 'Llama 3.3 70B', description: 'Meta, general purpose', default: false, category: 'nvidia' },
   { id: 'mistralai/mistral-large-2-instruct', name: 'Mistral Large 2', description: 'Mistral, fast responses', default: false, category: 'nvidia' },
   { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'Nemotron 70B', description: 'NVIDIA optimized', default: false, category: 'nvidia' },
-] as const;
+];
 
 export const MODEL_CATEGORY_LABELS: Record<ModelCategory, string> = {
   default: '⭐ Recommended',

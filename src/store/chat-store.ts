@@ -23,7 +23,7 @@ interface ChatStore {
   isLoading: boolean;
   error: string | null;
   abortController: AbortController | null;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, model?: string) => Promise<void>;
   stopGeneration: () => void;
   clearChat: () => void;
   removeLastExchange: () => void;
@@ -75,6 +75,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             role: m.role,
             content: m.content,
           })),
+          model: model || null,
         }),
         signal: abortController.signal,
       });

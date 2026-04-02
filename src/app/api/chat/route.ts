@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { chatCompletion, type ChatMessage as NvidiaMessage } from '@/lib/nvidia';
 import { toolDefinitions, executeTool, type ToolResult } from '@/lib/tools';
 
-const MODEL = 'deepseek-ai/deepseek-v3.1';
+const DEFAULT_MODEL = 'deepseek-ai/deepseek-v3.1';
 
 const SYSTEM_PROMPT = `You are Touch Everything, an expert AI coding assistant. You help users with software engineering tasks including writing code, debugging, refactoring, explaining technical concepts, and managing project files.
 
@@ -28,7 +28,8 @@ const MAX_TOOL_ROUNDS = 10;
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages } = await request.json();
+    const { messages, model } = await request.json();
+    const selectedModel = model && typeof model === 'string' ? model : DEFAULT_MODEL;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Messages array is required' }), {
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
             const response = await chatCompletion(
               apiMessages,
               toolDefinitions,
-              MODEL,
+              selectedModel,
               0.3,
               4096
             );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, Component, type ReactNode } from 'react';
 import { Bot, Trash2, Sparkles, Terminal, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,7 +19,60 @@ interface SystemNotification {
   timestamp: number;
 }
 
-export default function Home() {
+// ─── Error Boundary ──────────────────────────────────────────────────────
+
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('[ErrorBoundary]', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background p-8">
+          <div className="max-w-md w-full text-center space-y-4">
+            <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-red-500/10 border border-red-500/20 mx-auto">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">Something went wrong</h2>
+            <p className="text-sm text-muted-foreground">
+              {this.state.error?.message || 'An unexpected error occurred'}
+            </p>
+            <button
+              className="px-4 py-2 rounded-lg bg-[#E8710A] text-white text-sm font-medium hover:bg-[#E8710A]/90 transition-colors"
+              onClick={() => this.setState({ hasError: false, error: null })}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <Home />
+    </ErrorBoundary>
+  );
+}
+
+function Home() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { messages, isLoading, sendMessage, stopGeneration, clearChat, removeLastExchange } = useChatStore();
@@ -70,9 +123,9 @@ export default function Home() {
 
   const handleSend = useCallback(
     (content: string) => {
-      sendMessage(content);
+      sendMessage(content, cmdStore.currentModel);
     },
-    [sendMessage]
+    [sendMessage, cmdStore.currentModel]
   );
 
   // ── Command Handler ────────────────────────────────────────────────────────

@@ -29,8 +29,8 @@
 
 | 维度 | 说明 |
 |------|------|
-| **项目名称** | Claude Code Web |
-| **当前版本** | v0.2.0 |
+| **项目名称** | Touch Everything |
+| **当前版本** | v0.3.0 |
 | **核心定位** | Web 端 AI 编码助手，对标 Anthropic Claude Code CLI |
 | **技术栈** | Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · shadcn/ui · Zustand · Prisma · Bun |
 | **AI 后端** | NVIDIA NIM API（OpenAI 兼容协议） |
@@ -88,13 +88,15 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 当前架构 (v0.2)
+### 当前架构 (v0.3)
 
 ```
 Browser (React 19 + Zustand)
   │
-  ├── ChatInput ──── CommandPalette (/命令自动补全)
+  ├── ChatInput ──── CommandPalette (/命令自动补全 + fuzzy search)
   │                   ModelSelector (模型切换)
+  │                   History (↑↓) + Tab completion
+  │                   Inline hint bar
   │
   ├── ChatMessage ── ToolCallBlock (工具调用展示)
   │                   CodeBlock (代码高亮)
@@ -114,7 +116,7 @@ Browser (React 19 + Zustand)
 
 ---
 
-## 当前状态 v0.2
+## 当前状态 v0.3
 
 ### 已实现功能清单
 
